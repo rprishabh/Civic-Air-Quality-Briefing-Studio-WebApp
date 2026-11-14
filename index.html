@@ -3,625 +3,174 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AeroCivic | Civic Air Quality Briefing Studio (Google PromptWars)</title>
-  <meta name="description" content="AI-driven civic intelligence converting raw messy air quality sensor data into targeted municipal, housing society, and school interventions.">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              900: '#064e3b',
-            },
-            hazard: {
-              good: '#10b981',
-              moderate: '#f59e0b',
-              poor: '#f97316',
-              severe: '#ef4444',
-              hazardous: '#7f1d1d'
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            display: ['Outfit', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-  
-  <!-- Google Fonts & Lucide Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://generativelanguage.googleapis.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';">
+  <meta name="description" content="AI-driven civic intelligence studio converting messy raw air quality sensor tables into prioritized municipal, school, and housing society interventions.">
+  <title>AeroCivic Studio | Civic Air Quality Briefing Studio</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-emerald-500 selection:text-white">
+<body>
 
-  <!-- Top Announcement Bar -->
-  <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 shadow-inner">
-    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 uppercase tracking-wider">PromptWars AI Studio</span>
-    <span>Google Developer Hack2Skill Evaluation: Live Gemini 2.5 Flash GenAI Model Connected</span>
-    <span class="hidden md:inline text-emerald-200">| 100% Traceable Civic Intelligence</span>
-  </div>
+  <!-- Accessible Skip to Content Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Header -->
-  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-bold text-xl">
-          <i data-lucide="wind" class="w-6 h-6"></i>
-        </div>
+  <!-- Header Landmark -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">💨</div>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="font-display font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">AeroCivic Studio</span>
-            <span class="text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md">v2.5 GenAI</span>
-          </div>
-          <p class="text-xs text-slate-400">Civic Air Quality Briefing & Hyperlocal Intervention Engine</p>
+          <h1 class="brand-title">AeroCivic Studio</h1>
+          <p class="brand-subtitle">Civic Air Quality Briefing & Hyperlocal Intervention Engine</p>
         </div>
       </div>
 
-      <!-- Header Action Controls -->
-      <div class="flex items-center gap-3">
-        <!-- API Key Status / Configuration Button -->
-        <button id="btnApiKeyModal" class="flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-700/60 transition text-slate-300 hover:text-white" title="Configure Google Gemini API Key">
-          <span id="apiKeyStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <i data-lucide="key" class="w-3.5 h-3.5"></i>
-          <span id="apiKeyBtnText">Gemini API Key</span>
-        </button>
-
-        <!-- Test Suite Button for Evaluation Scoring -->
-        <button id="btnRunTests" class="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30 hover:bg-teal-500/20 transition">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-          <span>Run Code Audits (6 Tests)</span>
-        </button>
-
-        <!-- Reset / New Brief -->
-        <button id="btnNewBrief" class="text-xs font-medium px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700 transition flex items-center gap-1.5">
-          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-          <span>Reset</span>
-        </button>
+      <!-- Ephemeral In-Memory API Key Configuration -->
+      <div class="api-key-group">
+        <label for="api-key-input" class="api-label">Google Gemini API Key (In-Memory Only):</label>
+        <div class="api-input-wrapper">
+          <input type="password" id="api-key-input" class="api-input" placeholder="Enter key (e.g. AIzaSy...)" autocomplete="off">
+          <span id="api-key-status" class="key-status unconfigured">No Key (Server Proxy / Deterministic)</span>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+  <!-- Main Content Landmark -->
+  <main id="main-content" class="main-layout">
 
-    <!-- Hero / Quick Explainer Strip -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden">
-      <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
-        <div>
-          <h1 class="text-xl sm:text-2xl font-bold font-display tracking-tight text-white flex items-center gap-2">
-            Civic Air Quality Briefing Studio
-            <span class="text-xs font-normal text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Automated Evaluator Ready</span>
-          </h1>
-          <p class="text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
-            Ingest irregular sensor tables with unit disparities and data gaps. AeroCivic uses <strong>Gemini Generative AI</strong> to audit data traceability, identify micro-hotspots, run historical delta comparison, and draft dual targeted briefs for municipal wards, housing societies, and school systems.
-          </p>
-        </div>
-
-        <!-- Sample Dataset One-Click Ingestion -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 self-start lg:self-center bg-slate-950/80 p-2 rounded-xl border border-slate-800">
-          <span class="text-xs font-semibold text-slate-400 px-2 flex items-center gap-1">
-            <i data-lucide="database" class="w-3.5 h-3.5 text-emerald-400"></i> Load Demo Data:
-          </span>
-          <div class="flex flex-wrap gap-1.5">
-            <button onclick="loadSampleScenario('festiveSmog')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1">
-              <span>🎆 Festive Smog (Gaps)</span>
-            </button>
-            <button onclick="loadSampleScenario('industrialSchool')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1">
-              <span>🏭 Industrial vs School</span>
-            </button>
-            <button onclick="loadSampleScenario('constructionDust')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1">
-              <span>🏗️ Construction Dust</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 1: Input & Configuration Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- Left Column: Raw Data & Parser Studio (7 cols) -->
-      <div class="lg:col-span-7 space-y-4">
-        
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">1</span>
-              <h2 class="font-semibold text-white text-base">Raw Sensor Data Ingestion</h2>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-slate-400">
-              <label class="cursor-pointer hover:text-emerald-400 flex items-center gap-1 transition">
-                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                <span>Upload CSV / TXT</span>
-                <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.json" class="hidden">
-              </label>
-              <span>•</span>
-              <button onclick="clearRawData()" class="hover:text-rose-400 transition">Clear</button>
-            </div>
-          </div>
-
-          <div class="mt-3 space-y-2">
-            <div class="flex justify-between items-center text-xs text-slate-400">
-              <span>Paste messy raw logs, CSV tables, sensor telemetry with missing values:</span>
-              <span id="dataStatsBadge" class="font-mono text-emerald-400">0 characters</span>
-            </div>
-            <textarea id="rawInputData" rows="9" 
-              class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl p-3 font-mono text-xs text-slate-200 placeholder-slate-600 transition resize-y"
-              placeholder="Timestamp, Location, Sensor_ID, PM2.5, PM10 (ppm or ug/m3), AQI, Status
-2026-11-14 06:00, Ward 4 - Anand Vihar, SEN-401, 385 ug/m3, 510, 412, Active
-2026-11-14 06:00, Ward 7 - St. Xavier School, SEN-702, MISSING, 180 ug/m3, N/A, SENSOR_FAULT
-2026-11-14 06:00, Ward 9 - Silver Oak RWA, SEN-901, 215, 310 ug/m3, 275, Active
-2026-11-14 07:00, Ward 4 - Anand Vihar, SEN-401, 410 ug/m3, 540, 435, Active"></textarea>
-          </div>
-
-          <!-- Pre-Analysis Data Audit Strip -->
-          <div id="quickDataAuditStrip" class="mt-3 p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl text-xs space-y-1.5">
-            <div class="flex items-center justify-between font-semibold text-slate-300">
-              <span class="flex items-center gap-1.5">
-                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-400"></i>
-                <span>Data Quality & Integrity Pre-Audit</span>
-              </span>
-              <span id="auditSummaryPill" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Waiting for data</span>
-            </div>
-            <div id="auditDetails" class="text-slate-400 text-[11px] leading-relaxed">
-              Load or paste sensor data above to automatically detect missing timestamps, sensor offline gaps, and unit inconsistencies ($\mu g/m^3$ vs ppm).
-            </div>
-          </div>
-        </div>
-
-        <!-- Historical Delta Comparison Context -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center text-xs font-bold">2</span>
-              <h2 class="font-semibold text-white text-base">Prior Shift Benchmark (Delta Engine)</h2>
-            </div>
-            <div class="flex items-center gap-2">
-              <label class="text-xs text-slate-400 flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" id="chkEnableDelta" checked class="rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500 w-3.5 h-3.5">
-                <span>Compare with previous period</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="mt-3 space-y-2">
-            <div class="flex justify-between items-center text-xs text-slate-400">
-              <span>Baseline data from previous shift/day to calculate exact % change:</span>
-              <button onclick="loadPreviousBenchmark()" class="text-teal-400 hover:underline">Use Yesterday's Baseline</button>
-            </div>
-            <textarea id="previousBriefData" rows="3" 
-              class="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 rounded-xl p-3 font-mono text-xs text-slate-300 placeholder-slate-600 transition"
-              placeholder="Previous 24h Average: Ward 4 (PM2.5: 310 ug/m3, Severe), Ward 7 (PM2.5: 140 ug/m3, Moderate), Ward 9 (PM2.5: 180 ug/m3, Poor). Wind: Calm NW."></textarea>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right Column: Persona & Targeting Configuration (5 cols) -->
-      <div class="lg:col-span-5 space-y-4">
-        
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl h-full flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-2 pb-3 border-b border-slate-800">
-              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">3</span>
-              <h2 class="font-semibold text-white text-base">Target Stakeholder & Language</h2>
-            </div>
-
-            <!-- Target Persona Selector -->
-            <div class="mt-4 space-y-2">
-              <label class="text-xs font-semibold text-slate-300 block">Who is this briefing for? (Determines action matrix)</label>
-              <div class="grid grid-cols-2 gap-2" id="personaSelector">
-                
-                <button type="button" data-persona="ward_officer" class="persona-btn active p-3 rounded-xl border border-emerald-500/50 bg-emerald-500/10 text-left transition flex flex-col justify-between">
-                  <div class="flex items-center justify-between w-full">
-                    <span class="font-semibold text-sm text-white">Ward Officer</span>
-                    <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
-                  </div>
-                  <span class="text-[11px] text-slate-400 mt-1">Municipal enforcement, smog guns, traffic diversions, construction curbs.</span>
-                </button>
-
-                <button type="button" data-persona="housing_society" class="persona-btn p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 text-left transition flex flex-col justify-between">
-                  <div class="flex items-center justify-between w-full">
-                    <span class="font-semibold text-sm text-white">Housing Society / RWA</span>
-                    <i data-lucide="building" class="w-4 h-4 text-slate-400"></i>
-                  </div>
-                  <span class="text-[11px] text-slate-400 mt-1">Air purifiers in clubhouses, DG set bans, morning walk warnings, resident alerts.</span>
-                </button>
-
-                <button type="button" data-persona="school" class="persona-btn p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 text-left transition flex flex-col justify-between">
-                  <div class="flex items-center justify-between w-full">
-                    <span class="font-semibold text-sm text-white">School / Daycare</span>
-                    <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-400"></i>
-                  </div>
-                  <span class="text-[11px] text-slate-400 mt-1">Assembly indoors, suspend outdoor sports, bus idle engine shutdown, asthma logs.</span>
-                </button>
-
-                <button type="button" data-persona="hospital" class="persona-btn p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/50 text-left transition flex flex-col justify-between">
-                  <div class="flex items-center justify-between w-full">
-                    <span class="font-semibold text-sm text-white">Hospital / Clinic</span>
-                    <i data-lucide="heart-pulse" class="w-4 h-4 text-slate-400"></i>
-                  </div>
-                  <span class="text-[11px] text-slate-400 mt-1">ER respiratory triage, nebulizer stockpiling, COPD/elderly patient broadcast.</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Citizen Advisory Reading Level & Language Configuration -->
-            <div class="mt-4 pt-4 border-t border-slate-800 space-y-3">
-              <label class="text-xs font-semibold text-slate-300 block">Citizen Advisory Output Specs</label>
-              
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <span class="text-[11px] text-slate-400 mb-1 block">Public Reading Level:</span>
-                  <select id="selReadingLevel" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200">
-                    <option value="accessible_kids_elders" selected>Grade 5 / Simple (Kids & Elders)</option>
-                    <option value="standard_civic">Standard Civic Citizen</option>
-                    <option value="technical_detailed">Detailed Technical Citizen</option>
-                  </select>
-                </div>
-
-                <div>
-                  <span class="text-[11px] text-slate-400 mb-1 block">Advisory Language:</span>
-                  <select id="selLanguage" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200">
-                    <option value="English" selected>English</option>
-                    <option value="Hindi">Hindi (हिंदी)</option>
-                    <option value="Marathi">Marathi (मराठी)</option>
-                    <option value="Gujarati">Gujarati (ગુજરાતી)</option>
-                    <option value="Tamil">Tamil (தமிழ்)</option>
-                    <option value="Bengali">Bengali (বাংলা)</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Vulnerable Groups Safeguard Badges -->
-              <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800/80">
-                <span class="text-[11px] text-slate-400 font-medium block mb-1">Mandatory Vulnerable Group Protections Included:</span>
-                <div class="flex flex-wrap gap-1.5 text-[10px]">
-                  <span class="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <i data-lucide="baby" class="w-3 h-3"></i> Children under 12
-                  </span>
-                  <span class="bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <i data-lucide="user-check" class="w-3 h-3"></i> Elderly (65+)
-                  </span>
-                  <span class="bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <i data-lucide="activity" class="w-3 h-3"></i> Asthma & COPD
-                  </span>
-                  <span class="bg-purple-500/10 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <i data-lucide="heart" class="w-3 h-3"></i> Expectant Mothers
-                  </span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Primary Call to Action Button -->
-          <div class="mt-6 pt-4 border-t border-slate-800">
-            <button id="btnGenerateBrief" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm tracking-wide shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span id="btnGenerateText">Generate GenAI Briefing & Advisory</span>
-            </button>
-            <p class="text-[11px] text-center text-slate-400 mt-2">
-              Powered by Google Gemini 2.5 Flash • Zero Mocking Policy Compliant
-            </p>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Live Execution Status Bar (Displays when processing) -->
-    <div id="processingBanner" class="hidden bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-4 shadow-lg animate-pulse">
-      <div class="flex items-center gap-3">
-        <div class="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-        <div class="text-xs">
-          <p class="font-semibold text-emerald-300" id="processingStatusText">Calling Google Gemini API...</p>
-          <p class="text-slate-400 text-[11px]">Executing structured telemetry parsing, trace citations, delta verification, and multi-tier localized action synthesis.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hotspot Map & Spatial Dispersion Radar (Standing Out Top 5) -->
-    <div id="spatialHotspotCard" class="hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-2xl">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-slate-800 gap-2">
-        <div class="flex items-center gap-2">
-          <i data-lucide="map-pin" class="w-5 h-5 text-emerald-400"></i>
-          <h2 class="font-semibold text-white text-base">Civic Hotspot Dispersion Radar & Sensor Map</h2>
-        </div>
-        <div class="flex items-center gap-2 text-xs">
-          <span class="inline-flex items-center gap-1 text-emerald-400 font-medium">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Good (<50)
-          </span>
-          <span class="inline-flex items-center gap-1 text-amber-400 font-medium">
-            <span class="w-2 h-2 rounded-full bg-amber-400"></span> Moderate (51-100)
-          </span>
-          <span class="inline-flex items-center gap-1 text-orange-400 font-medium">
-            <span class="w-2 h-2 rounded-full bg-orange-400"></span> Poor (101-200)
-          </span>
-          <span class="inline-flex items-center gap-1 text-red-400 font-medium">
-            <span class="w-2 h-2 rounded-full bg-red-400"></span> Severe (201+)
-          </span>
+    <!-- Section 1: Ingestion & Telemetry Controls -->
+    <section class="card-section" aria-labelledby="sec-ingestion-title">
+      <div class="section-header">
+        <h2 id="sec-ingestion-title" class="section-title">1. Messy Telemetry Ingestion & Physics Triage</h2>
+        <div class="preset-buttons">
+          <button type="button" id="btn-preset-a" class="btn btn-secondary">Load Current Shift (Messy)</button>
+          <button type="button" id="btn-preset-b" class="btn btn-secondary">Load Baseline Shift</button>
         </div>
       </div>
 
-      <!-- Interactive Hotspot Visualization Area -->
-      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4" id="hotspotCardsContainer">
-        <!-- Generated Dynamically -->
-      </div>
-    </div>
-
-    <!-- Output Section: Dual Briefings Tabbed Studio -->
-    <div id="resultsStudioSection" class="hidden space-y-4">
-      
-      <!-- Studio Tabs Header -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 border border-slate-800 p-2 rounded-xl">
-        <div class="flex gap-2">
-          <button id="tabBtnInternal" onclick="switchResultTab('internal')" class="px-4 py-2 rounded-lg font-semibold text-xs flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-            <i data-lucide="file-text" class="w-4 h-4"></i>
-            <span>1. Internal Briefing Note (Authority / Society)</span>
-          </button>
-
-          <button id="tabBtnCitizen" onclick="switchResultTab('citizen')" class="px-4 py-2 rounded-lg font-semibold text-xs flex items-center gap-2 text-slate-400 hover:text-white border border-transparent hover:border-slate-800">
-            <i data-lucide="megaphone" class="w-4 h-4"></i>
-            <span>2. Public Citizen Advisory (Multilingual)</span>
-          </button>
-
-          <button id="tabBtnAudit" onclick="switchResultTab('audit')" class="px-4 py-2 rounded-lg font-semibold text-xs flex items-center gap-2 text-slate-400 hover:text-white border border-transparent hover:border-slate-800">
-            <i data-lucide="check-check" class="w-4 h-4"></i>
-            <span>3. Data Traceability & Gaps Audit</span>
-          </button>
+      <div class="form-grid">
+        <div class="editor-col">
+          <label for="raw-input-data" class="control-label">Raw Telemetry Table (CSV, TSV, JSON, Markdown with missing values & mixed units):</label>
+          <textarea id="raw-input-data" class="code-editor" rows="7" placeholder="Timestamp, Location, PM2.5, PM10, NO2..."></textarea>
+          
+          <div class="file-upload-row">
+            <label for="file-upload-input" class="file-label">Upload Data File (.csv, .tsv, .json, .txt):</label>
+            <input type="file" id="file-upload-input" class="file-input" accept=".csv,.tsv,.json,.txt,.md">
+          </div>
         </div>
 
-        <!-- Quick Output Utilities -->
-        <div class="flex items-center gap-2">
-          <button onclick="copyCurrentOutput()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span id="copyBtnLabel">Copy Text</span>
-          </button>
+        <div class="config-col">
+          <div class="control-group">
+            <label for="persona-select" class="control-label">Target Civic Stakeholder:</label>
+            <select id="persona-select" class="select-control">
+              <option value="ward_officer" selected>Municipal Ward Officer (Enforcement & Sprinklers)</option>
+              <option value="school">School Principal / Admin (CleanAir@School)</option>
+              <option value="housing_society">Housing Society / RWA (Clubhouse HEPA & DG Sets)</option>
+            </select>
+          </div>
 
-          <button onclick="exportWhatsAppAdvisory()" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5 transition">
-            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-            <span>WhatsApp Broadcast</span>
-          </button>
+          <div class="control-group">
+            <label for="language-select" class="control-label">Advisory Language:</label>
+            <select id="language-select" class="select-control">
+              <option value="English" selected>English</option>
+              <option value="Hindi">Hindi (हिन्दी)</option>
+              <option value="Marathi">Marathi (मराठी)</option>
+              <option value="Tamil">Tamil (தமிழ்)</option>
+              <option value="Bengali">Bengali (বাংলা)</option>
+            </select>
+          </div>
 
-          <button onclick="window.print()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition">
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-            <span>Print Notice</span>
+          <div class="control-group">
+            <label for="reading-level-select" class="control-label">Citizen Reading Level:</label>
+            <select id="reading-level-select" class="select-control">
+              <option value="standard" selected>Standard Adult Citizen</option>
+              <option value="simplified">Simplified / Grade 4 Child-Friendly</option>
+              <option value="vulnerable">High-Vulnerability Focus (Children, Elderly, Asthma)</option>
+            </select>
+          </div>
+
+          <button type="button" id="btn-generate" class="btn btn-primary btn-generate">
+            Generate GenAI Briefing & Advisory
           </button>
         </div>
       </div>
 
-      <!-- Tab Content 1: Internal Briefing Note -->
-      <div id="tabContentInternal" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
-        <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Confidential Operational Document</span>
-              <span id="briefTimestamp" class="text-xs text-slate-400"></span>
-            </div>
-            <h3 class="text-xl font-bold font-display text-white mt-1" id="briefTitle">Executive Civic Air Quality Action Brief</h3>
-          </div>
-          <div id="briefDeltaBadge" class="self-start sm:self-center"></div>
-        </div>
+      <!-- IIT Delhi Simulator Panel -->
+      <div class="simulator-panel" aria-labelledby="sim-title">
+        <h3 id="sim-title" class="sim-title">🔬 IIT Delhi "Dispersed Sources" Impact Estimator</h3>
+        <p class="sim-desc">Models projected 15%–26.6% PM2.5 reduction achievable by municipal pothole paving, unpaved shoulder stabilization, and open burning bans.</p>
+        <div id="iit-delhi-result" class="sim-result-container"></div>
+      </div>
+    </section>
 
-        <div id="internalBriefContent" class="prose prose-invert max-w-none text-slate-200 text-sm leading-relaxed space-y-4">
-          <!-- Rendered AI Output -->
+    <!-- Section 2: Verified Telemetry Table & Delta Comparison -->
+    <section class="card-section" aria-labelledby="sec-telemetry-title">
+      <div class="section-header">
+        <h2 id="sec-telemetry-title" class="section-title">2. Verified Telemetry & Historical Shift Deltas</h2>
+      </div>
+
+      <!-- Delta Matrix Grid -->
+      <div class="delta-section">
+        <h3 class="subsection-title">Shift Delta Comparison ("What Changed Since Last Shift")</h3>
+        <div id="delta-matrix-container" class="delta-matrix-container"></div>
+      </div>
+
+      <!-- Telemetry Data Table with EEA Badges -->
+      <div class="table-section">
+        <h3 class="subsection-title">Normalized Sensor Data & EEA Physics Anomaly Audit</h3>
+        <div id="telemetry-table-container" class="table-responsive"></div>
+      </div>
+    </section>
+
+    <!-- Section 3: Dual Output Briefing Studio -->
+    <section class="card-section" aria-labelledby="sec-studio-title">
+      <div class="section-header">
+        <h2 id="sec-studio-title" class="section-title">3. Dual Briefing Studio</h2>
+        <div class="provenance-strip" aria-live="polite">
+          <span class="prov-label">Synthesis Engine:</span>
+          <span id="provenance-badge" class="badge badge-info">Waiting for generation</span>
+          <span class="prov-label">Latency:</span>
+          <span id="provenance-latency" class="badge badge-secondary">—</span>
         </div>
       </div>
 
-      <!-- Tab Content 2: Public Citizen Advisory -->
-      <div id="tabContentCitizen" class="hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
-        <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded">Public Notice</span>
-              <span id="advisoryLangBadge" class="text-xs text-slate-300 bg-slate-800 px-2 py-0.5 rounded">Language: English</span>
-              <span id="advisoryLevelBadge" class="text-xs text-slate-300 bg-slate-800 px-2 py-0.5 rounded">Reading Level: Accessible</span>
-            </div>
-            <h3 class="text-xl font-bold font-display text-white mt-1">Community Air Health Bulletin</h3>
-          </div>
-          <button onclick="exportWhatsAppAdvisory()" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition">
-            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-            <span>Format for WhatsApp Group</span>
+      <!-- WAI-ARIA Tab Navigation -->
+      <div class="tabs-wrapper">
+        <div role="tablist" class="tab-list" aria-label="Briefing Studio Views">
+          <button role="tab" id="tab-internal" aria-selected="true" aria-controls="panel-internal" tabindex="0" class="tab-btn">
+            📋 Internal Technical Briefing
+          </button>
+          <button role="tab" id="tab-citizen" aria-selected="false" aria-controls="panel-citizen" tabindex="-1" class="tab-btn">
+            📢 Public Citizen Advisory
           </button>
         </div>
 
-        <div id="citizenAdvisoryContent" class="prose prose-invert max-w-none text-slate-200 text-sm leading-relaxed space-y-4">
-          <!-- Rendered Citizen AI Output -->
+        <!-- Tab Panel 1: Internal Technical Brief -->
+        <div role="tabpanel" id="panel-internal" aria-labelledby="tab-internal" class="tab-panel">
+          <div id="technical-brief-container" class="brief-box"></div>
+          <h3 class="subsection-title">Prioritized Operational Action Matrix</h3>
+          <div id="action-cards-container" class="action-grid"></div>
+        </div>
+
+        <!-- Tab Panel 2: Plain-Language Citizen Advisory -->
+        <div role="tabpanel" id="panel-citizen" aria-labelledby="tab-citizen" class="tab-panel" hidden>
+          <div id="citizen-advisory-container" class="citizen-advisory-box"></div>
         </div>
       </div>
 
-      <!-- Tab Content 3: Data Traceability & Gaps Audit -->
-      <div id="tabContentAudit" class="hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-          <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
-            Sensor Telemetry Traceability & Unreliable Reading Flags
-          </h3>
-          <span class="text-xs text-slate-400">Evaluated under Platform Scoring Rule §4</span>
-        </div>
-
-        <div id="auditReportContainer" class="space-y-3">
-          <!-- Rendered Traceability Output -->
-        </div>
+      <!-- Action Footer -->
+      <div class="studio-footer">
+        <button type="button" id="btn-copy-brief" class="btn btn-secondary">Copy Briefing JSON</button>
+        <button type="button" id="btn-print-brief" class="btn btn-secondary">Print Civic Notice Board</button>
       </div>
-
-    </div>
+    </section>
 
   </main>
 
-  <!-- Gemini API Key Configuration Modal -->
-  <div id="apiKeyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i data-lucide="key" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-lg font-bold text-white">Google Gemini API Configuration</h3>
-        </div>
-        <button onclick="closeApiKeyModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
+  <!-- Screen Reader Live Announcer -->
+  <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-      <p class="text-xs text-slate-300 leading-relaxed">
-        PromptWars requires an <strong>actual working GenAI API call</strong> (no hardcoded mocks or canned data). Enter your Google AI Studio Gemini API Key below.
-      </p>
-
-      <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-slate-300">Gemini API Key</label>
-        <input type="password" id="inputApiKey" placeholder="AIzaSy..." 
-          class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-white placeholder-slate-600">
-        <p class="text-[11px] text-slate-400">Saved securely in browser local storage only. Never sent to third parties.</p>
-      </div>
-
-      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
-        <div class="font-semibold text-emerald-400 flex items-center gap-1">
-          <i data-lucide="info" class="w-3.5 h-3.5"></i> Don't have a key right now?
-        </div>
-        <p class="text-[11px] text-slate-400 leading-normal">
-          Get a free key instantly from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-emerald-400 underline">Google AI Studio</a>. You can also test with built-in heuristic parsing fallback for dry-run verification.
-        </p>
-      </div>
-
-      <div class="flex items-center justify-end gap-2 pt-2">
-        <button onclick="closeApiKeyModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white">
-          Cancel
-        </button>
-        <button onclick="saveApiKey()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">
-          Save API Key
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Automated Evaluation Test Runner Modal -->
-  <div id="testRunnerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2">
-          <i data-lucide="check-circle" class="w-5 h-5 text-teal-400"></i>
-          <div>
-            <h3 class="text-lg font-bold text-white">Automated Code & Framework Verification</h3>
-            <p class="text-xs text-slate-400">Validating the 6 Platform Scoring Dimensions</p>
-          </div>
-        </div>
-        <button onclick="closeTestRunnerModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Test Scores Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div class="text-[10px] text-slate-400">Code Quality (High)</div>
-          <div class="text-emerald-400 font-bold text-sm flex items-center gap-1 mt-0.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> PASS (Modular)
-          </div>
-        </div>
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div class="text-[10px] text-slate-400">Problem Alignment (High)</div>
-          <div class="text-emerald-400 font-bold text-sm flex items-center gap-1 mt-0.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> PASS (Traceable)
-          </div>
-        </div>
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div class="text-[10px] text-slate-400">Security (Medium)</div>
-          <div class="text-emerald-400 font-bold text-sm flex items-center gap-1 mt-0.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> PASS (XSS Clean)
-          </div>
-        </div>
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div class="text-[10px] text-slate-400">Efficiency (Medium)</div>
-          <div class="text-emerald-400 font-bold text-sm flex items-center gap-1 mt-0.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> PASS (<50ms AST)
-          </div>
-        </div>
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div class="text-[10px] text-slate-400">Testing (Low)</div>
-          <div class="text-emerald-400 font-bold text-sm flex items-center gap-1 mt-0.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> PASS (Vitest Suite)
-          </div>
-        </div>
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div class="text-[10px] text-slate-400">Accessibility (Low)</div>
-          <div class="text-emerald-400 font-bold text-sm flex items-center gap-1 mt-0.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> PASS (WCAG AA)
-          </div>
-        </div>
-      </div>
-
-      <!-- Test Log Output -->
-      <div class="space-y-1.5">
-        <span class="text-xs font-semibold text-slate-300">Live Test Execution Logs:</span>
-        <pre id="testLogs" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] text-emerald-400 h-48 overflow-y-auto leading-relaxed">
-Click "Run Automated Tests" to execute the test suite...
-        </pre>
-      </div>
-
-      <div class="flex items-center justify-between pt-2">
-        <span class="text-xs text-slate-400">6 unit & integration assertions</span>
-        <div class="flex gap-2">
-          <button onclick="closeTestRunnerModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white">Close</button>
-          <button onclick="runTestSuite()" class="px-4 py-2 rounded-lg text-xs font-bold bg-teal-500 hover:bg-teal-400 text-slate-950">Run Automated Tests</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- WhatsApp Export Modal -->
-  <div id="whatsAppModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i data-lucide="message-square" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-lg font-bold text-white">Instant WhatsApp Citizen Alert</h3>
-        </div>
-        <button onclick="closeWhatsAppModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-300">Formatted with high-readability emoji alerts ready for housing society or ward broadcast:</p>
-      
-      <textarea id="whatsappOutputText" rows="10" readonly
-        class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-200 select-all"></textarea>
-
-      <div class="flex justify-end gap-2">
-        <button onclick="closeWhatsAppModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white">Close</button>
-        <button onclick="copyWhatsAppText()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center gap-1.5">
-          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-          <span id="btnCopyWaLabel">Copy Broadcast Text</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="app.js"></script>
-  <script>
-    // Initialize Lucide icons on DOM load
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
-  </script>
+  <!-- Main ES Module Script (Zero External Runtime Dependencies) -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>

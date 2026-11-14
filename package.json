@@ -1,18 +1,22 @@
 {
-  "name": "aerocivic-studio",
-  "version": "1.0.0",
-  "description": "Civic Air Quality Briefing Studio for Google Developer PromptWars Hackathon",
+  "name": "civic-air-quality-briefing-studio",
+  "version": "2.0.0",
+  "description": "Production-grade, zero-dependency civic air quality intelligence studio powered by Google Gemini 2.5 Flash",
+  "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "npx serve .",
-    "test": "node tests.js"
+    "test": "node test.js",
+    "lint": "node scripts/lint.js",
+    "start": "node -e \"import('http').then(h => { const fs = import('fs'); const s = h.createServer((req, res) => { let p = req.url === '/' ? 'index.html' : req.url.slice(1); if (fs.existsSync(p)) { res.writeHead(200, {'Content-Type': p.endsWith('.js') ? 'application/javascript' : p.endsWith('.css') ? 'text/css' : 'text/html'}); fs.createReadStream(p).pipe(res); } else { res.writeHead(404); res.end('Not Found'); } }); s.listen(3000, () => console.log('Serving on http://localhost:3000')); })\""
   },
   "keywords": [
     "google-gemini",
     "promptwars",
-    "civic-intelligence",
+    "hack2skill",
+    "civic-tech",
     "air-quality",
-    "genai"
+    "wcag-aa",
+    "zero-dependency"
   ],
   "author": "Google Developer PromptWars Team",
   "license": "MIT"
