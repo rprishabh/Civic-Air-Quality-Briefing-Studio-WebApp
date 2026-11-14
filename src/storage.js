@@ -3,29 +3,33 @@
  * @description In-memory snapshot comparison history and safe JSON data export/import utilities.
  */
 
-import { sanitizeCell } from './security.js';
+import { sanitizeCell, safeJSONParse } from './security.js';
 
 /** In-memory cache of saved briefing snapshots */
 const _snapshotStore = new Map();
 
 /**
- * Saves a named snapshot in memory.
+ * Saves a named snapshot in memory safely cloned without prototype pollution.
  * @param {string} name - Snapshot name identifier
  * @param {any} data - Telemetry or briefing payload
  */
 export function saveMemorySnapshot(name, data) {
   if (!name || typeof name !== 'string') return;
-  _snapshotStore.set(name.trim(), JSON.parse(JSON.stringify(data)));
+  const serialized = JSON.stringify(data);
+  const safeCloned = safeJSONParse(serialized, {});
+  _snapshotStore.set(name.trim(), safeCloned);
 }
 
 /**
- * Retrieves a named snapshot from memory.
+ * Retrieves a named snapshot from memory safely cloned.
  * @param {string} name - Snapshot identifier
  * @returns {any|null} Cloned snapshot data or null
  */
 export function getMemorySnapshot(name) {
   const data = _snapshotStore.get(name.trim());
-  return data ? JSON.parse(JSON.stringify(data)) : null;
+  if (!data) return null;
+  const serialized = JSON.stringify(data);
+  return safeJSONParse(serialized, null);
 }
 
 /**

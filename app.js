@@ -107,14 +107,10 @@ function handleTelemetryReparse(dom) {
 function updateIITDelhiDisplay(dom, meanPM25) {
   if (!dom.iitDelhiResultContainer) return;
   const sim = simulateIITDelhiCivicFixes(meanPM25 || 250, state.selectedCivicFixes);
-  while (dom.iitDelhiResultContainer.firstChild) {
-    dom.iitDelhiResultContainer.removeChild(dom.iitDelhiResultContainer.firstChild);
-  }
-
   const text = document.createElement('div');
   text.className = 'sim-result-box';
   text.textContent = `Baseline Ward Avg PM2.5: ${meanPM25} µg/m³ → Projected PM2.5: ${sim.projectedPM25} µg/m³ (${sim.percentDrop}% reduction, -${sim.absoluteReduction} µg/m³ via Pothole Paving & Waste Burning Patrols)`;
-  dom.iitDelhiResultContainer.appendChild(text);
+  dom.iitDelhiResultContainer.replaceChildren(text);
 }
 
 /**
@@ -166,17 +162,13 @@ function renderBriefingOutputs(dom, result) {
   safeSetText(dom.provenanceLatency, `${latencyMs} ms`);
 
   // Technical Brief
-  while (dom.technicalBriefContainer.firstChild) {
-    dom.technicalBriefContainer.removeChild(dom.technicalBriefContainer.firstChild);
-  }
   const h4 = document.createElement('h4');
   h4.className = 'executive-title';
   h4.textContent = data.executiveHeadline || 'Civic Mitigation Protocol';
   const p = document.createElement('p');
   p.className = 'technical-summary';
   p.textContent = data.technicalBrief || '';
-  dom.technicalBriefContainer.appendChild(h4);
-  dom.technicalBriefContainer.appendChild(p);
+  dom.technicalBriefContainer.replaceChildren(h4, p);
 
   // Priority Action Cards
   renderPriorityActionCards(dom.actionCardsContainer, data.priorityActions || [], highlightTelemetryRow);

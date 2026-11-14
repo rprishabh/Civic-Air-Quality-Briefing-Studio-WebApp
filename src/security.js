@@ -39,6 +39,29 @@ export function sanitizeCell(cell) {
 }
 
 /**
+ * Safely parses JSON strings while neutralizing prototype pollution attacks.
+ * Strips __proto__, constructor, and prototype properties.
+ * @param {unknown} rawString - Input JSON string
+ * @param {any} [fallback=null] - Default fallback value if parsing fails
+ * @returns {any} Sanitized object or fallback
+ */
+export function safeJSONParse(rawString, fallback = null) {
+  if (typeof rawString !== 'string' || !rawString.trim()) {
+    return fallback;
+  }
+  try {
+    return JSON.parse(rawString, (key, value) => {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        return undefined;
+      }
+      return value;
+    });
+  } catch {
+    return fallback;
+  }
+}
+
+/**
  * Validates uploaded user files against whitelist rules and memory thresholds.
  * @param {File} file - Browser File object
  * @returns {{ valid: boolean, error?: string }}
@@ -88,6 +111,10 @@ export function createSafeElement(tag, attributes = {}, children = []) {
     const lowerKey = key.toLowerCase();
     // Prohibit inline event attributes (e.g. onclick, onerror) to prevent script injection
     if (lowerKey.startsWith('on')) {
+      continue;
+    }
+    // Prohibit style attribute to enforce strict CSP compliance (zero inline styles)
+    if (lowerKey === 'style') {
       continue;
     }
     // Prohibit javascript:, vbscript:, and data: URLs in href/src to prevent DOM-based XSS

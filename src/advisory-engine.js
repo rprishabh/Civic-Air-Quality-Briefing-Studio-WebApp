@@ -49,14 +49,28 @@ export function simulateIITDelhiCivicFixes(baselinePM25, selectedFixes = []) {
  * @returns {Array<{ priority: 'P0'|'P1'|'P2', timeframe: string, action: string, evidenceCitation: string, impact: string }>}
  */
 export function generatePersonaActionMatrix(persona, rows) {
-  const worstRow = rows && rows.length > 0
-    ? [...rows].sort((a, b) => (b.pm25 || 0) - (a.pm25 || 0))[0]
-    : { rowIndex: 1, location: 'Ward-04', pm25: 412 };
+  let worstRow = null;
+  let maxPM = -Infinity;
+  let isDenseUrban = false;
+
+  if (rows && rows.length > 0) {
+    for (const r of rows) {
+      const pm = typeof r.pm25 === 'number' ? r.pm25 : 0;
+      if (pm > maxPM) {
+        maxPM = pm;
+        worstRow = r;
+      }
+      if (!isDenseUrban && /chowk|junction|metro|pier|corridor|complex/i.test(r.location || '')) {
+        isDenseUrban = true;
+      }
+    }
+  }
+
+  if (!worstRow) {
+    worstRow = { rowIndex: 1, location: 'Ward-04', pm25: 412 };
+  }
 
   const cite = `[Row #${worstRow.rowIndex} | ${worstRow.location} (PM2.5: ${worstRow.pm25 || 350} µg/m³)]`;
-  const isDenseUrban = rows.some((r) =>
-    /chowk|junction|metro|pier|corridor|complex/i.test(r.location || '')
-  );
 
   if (persona === 'school') {
     return [

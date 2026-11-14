@@ -1,0 +1,9 @@
+node_modules/
+*.pdf
+*.docx
+*.png
+*.jpg
+*.jpeg
+.DS_Store
+.env*
+.vercel

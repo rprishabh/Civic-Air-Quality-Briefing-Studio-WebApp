@@ -1,24 +1,39 @@
 /**
  * @file src/ui-renderers.js
- * @description Pure DOM node builders using DocumentFragment and createElement (ZERO unsafe HTML injection).
+ * @description Pure DOM node builders using DocumentFragment and replaceChildren (ZERO unsafe HTML injection).
  */
 
 import { createSafeElement } from './security.js';
 
 /**
- * Renders the verified telemetry table with EEA physics badges via DocumentFragment.
+ * Renders the verified telemetry table with EEA physics badges via DocumentFragment and replaceChildren.
  * @param {HTMLElement} container - Table container element
  * @param {Array<any>} rows - Processed telemetry rows
- * @param {(rowIndex: number) => void} [onRowClick] - Click handler
+ * @param {(rowIndex: number) => void} [onRowClick] - Delegated click handler
  */
 export function renderTelemetryTable(container, rows, onRowClick) {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
+  if (typeof onRowClick === 'function' && !container.dataset.hasDelegatedRowClick) {
+    container.dataset.hasDelegatedRowClick = 'true';
+    container.addEventListener('click', (e) => {
+      const tr = e.target.closest('.telemetry-data-row');
+      if (tr && tr.dataset.rowIndex) {
+        onRowClick(parseInt(tr.dataset.rowIndex, 10));
+      }
+    });
+    container.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const tr = e.target.closest('.telemetry-data-row');
+        if (tr && tr.dataset.rowIndex) {
+          e.preventDefault();
+          onRowClick(parseInt(tr.dataset.rowIndex, 10));
+        }
+      }
+    });
   }
 
   if (!rows || rows.length === 0) {
     const emptyNotice = createSafeElement('div', { class: 'empty-notice' }, ['No valid telemetry records loaded.']);
-    container.appendChild(emptyNotice);
+    container.replaceChildren(emptyNotice);
     return;
   }
 
@@ -35,24 +50,6 @@ export function renderTelemetryTable(container, rows, onRowClick) {
   ]);
 
   const tbody = createSafeElement('tbody');
-  if (typeof onRowClick === 'function') {
-    tbody.addEventListener('click', (e) => {
-      const tr = e.target.closest('.telemetry-data-row');
-      if (tr && tr.dataset.rowIndex) {
-        onRowClick(parseInt(tr.dataset.rowIndex, 10));
-      }
-    });
-    tbody.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        const tr = e.target.closest('.telemetry-data-row');
-        if (tr && tr.dataset.rowIndex) {
-          e.preventDefault();
-          onRowClick(parseInt(tr.dataset.rowIndex, 10));
-        }
-      }
-    });
-  }
-
   const frag = document.createDocumentFragment();
 
   rows.forEach((row) => {
@@ -68,9 +65,10 @@ export function renderTelemetryTable(container, rows, onRowClick) {
     const tdPm25 = createSafeElement('td', { class: 'font-mono' }, [row.pm25 !== null ? String(row.pm25) : 'MISSING']);
     const tdPm10 = createSafeElement('td', { class: 'font-mono' }, [row.pm10 !== null ? String(row.pm10) : 'N/A']);
 
+    const catClass = (row.category || 'unknown').toLowerCase().replace(/\s+/g, '-');
     const aqiPill = createSafeElement(
       'span',
-      { class: 'aqi-pill', style: `background-color: ${row.color}22; color: ${row.color}; border: 1px solid ${row.color}66;` },
+      { class: 'aqi-pill', 'data-category': catClass },
       [`${row.aqi} • ${row.category}`]
     );
     const tdAqi = createSafeElement('td', {}, [aqiPill]);
@@ -97,7 +95,7 @@ export function renderTelemetryTable(container, rows, onRowClick) {
   tbody.appendChild(frag);
   table.appendChild(thead);
   table.appendChild(tbody);
-  container.appendChild(table);
+  container.replaceChildren(table);
 }
 
 /**
@@ -106,12 +104,8 @@ export function renderTelemetryTable(container, rows, onRowClick) {
  * @param {Array<any>} deltas - Delta objects
  */
 export function renderDeltaMatrix(container, deltas) {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
-  }
-
   if (!deltas || deltas.length === 0) {
-    container.appendChild(createSafeElement('p', { class: 'text-muted' }, ['No prior shift baseline active for comparison.']));
+    container.replaceChildren(createSafeElement('p', { class: 'text-muted' }, ['No prior shift baseline active for comparison.']));
     return;
   }
 
@@ -150,20 +144,16 @@ export function renderDeltaMatrix(container, deltas) {
   });
 
   grid.appendChild(frag);
-  container.appendChild(grid);
+  container.replaceChildren(grid);
 }
 
 /**
- * Renders prioritized operational action cards (P0, P1, P2) with clickable citation chips.
+ * Renders prioritized operational action cards (P0, P1, P2) with delegated citation chips.
  * @param {HTMLElement} container - Target container
  * @param {Array<any>} actions - Action items
- * @param {(rowIndex: number) => void} [onCitationClick] - Citation click handler
+ * @param {(rowIndex: number) => void} [onCitationClick] - Delegated citation click handler
  */
 export function renderPriorityActionCards(container, actions, onCitationClick) {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
-  }
-
   if (typeof onCitationClick === 'function' && !container.dataset.hasDelegatedCitation) {
     container.dataset.hasDelegatedCitation = 'true';
     container.addEventListener('click', (e) => {
@@ -204,19 +194,15 @@ export function renderPriorityActionCards(container, actions, onCitationClick) {
     frag.appendChild(card);
   });
 
-  container.appendChild(frag);
+  container.replaceChildren(frag);
 }
 
 /**
- * Renders citizen public advisory guidance with vulnerable group cards.
+ * Renders citizen public advisory guidance with vulnerable group cards using replaceChildren.
  * @param {HTMLElement} container - Target element
  * @param {{ headline: string, advisory: string, vulnerableGuidance: Array<string> }} data
  */
 export function renderCitizenAdvisory(container, data) {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
-  }
-
   const wrapper = createSafeElement('div', { class: 'citizen-bulletin-wrapper' });
   const title = createSafeElement('h3', { class: 'citizen-headline' }, [data.headline || 'Community Air Advisory']);
   const intro = createSafeElement('p', { class: 'citizen-advisory-p' }, [data.advisory || '']);
@@ -236,5 +222,5 @@ export function renderCitizenAdvisory(container, data) {
   wrapper.appendChild(intro);
   wrapper.appendChild(list);
   wrapper.appendChild(helpline);
-  container.appendChild(wrapper);
+  container.replaceChildren(wrapper);
 }

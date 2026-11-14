@@ -1,37 +1,40 @@
 /**
  * @file src/ai.js
- * @description Google Gemini 2.5 Flash API client, in-memory key closure, and structured prompt synthesis.
+ * @description Google Gemini Flash API client, in-memory key closure, and structured prompt synthesis.
  */
 
 import { generatePersonaActionMatrix, buildCitizenAdvisoryText } from './advisory-engine.js';
+import { safeJSONParse } from './security.js';
 
-/** Private module-level closure variable for API key (NEVER in localStorage/cookies/storage) */
+/** Private module-level closure variable for API key (NEVER stored in localStorage/cookies/DOM) */
 let _inMemoryApiKey = '';
+const API_KEY_REGEX = /^[A-Za-z0-9_-]{20,100}$/;
 
 /**
- * Sets the ephemeral API key in memory closure.
+ * Sets the ephemeral API key in memory closure after regex verification.
  * @param {string} key - Google Gemini API Key
  */
 export function setInMemoryApiKey(key) {
-  _inMemoryApiKey = typeof key === 'string' ? key.trim() : '';
+  const trimmed = typeof key === 'string' ? key.trim() : '';
+  _inMemoryApiKey = API_KEY_REGEX.test(trimmed) ? trimmed : '';
 }
 
 /**
- * Returns whether an in-memory API key is configured.
+ * Returns whether a valid in-memory API key is configured.
  * @returns {boolean}
  */
 export function hasInMemoryApiKey() {
-  return _inMemoryApiKey.length > 10;
+  return API_KEY_REGEX.test(_inMemoryApiKey);
 }
 
 /**
- * Builds the structured system and user prompt for Gemini 2.5 Flash.
- * @param {string} persona - Target stakeholder persona
- * @param {string} language - Target language for citizen advisory
- * @param {string} readingLevel - Reading difficulty tier
- * @param {Array<any>} rows - Processed telemetry rows
- * @param {Array<any>} deltas - Shift delta comparison array
- * @returns {string} Fully structured prompt string
+ * Builds the structured system and user prompt for Gemini.
+ * @param {string} persona - Stakeholder persona
+ * @param {string} language - Target citizen language
+ * @param {string} readingLevel - Reading difficulty
+ * @param {Array<any>} rows - Telemetry rows
+ * @param {Array<any>} deltas - Shift deltas
+ * @returns {string} Prompt string
  */
 export function buildGeminiPrompt(persona, language, readingLevel, rows, deltas) {
   const sampleRows = rows.slice(0, 10).map((r) =>
@@ -43,7 +46,7 @@ export function buildGeminiPrompt(persona, language, readingLevel, rows, deltas)
   ).join('\n');
 
   return `
-You are the Chief Civic Intelligence Officer operating AeroCivic Studio for municipal disaster & environmental mitigation.
+You are Chief Civic Intelligence Officer operating AeroCivic Studio for municipal disaster & environmental mitigation.
 Analyze the following verified air quality sensor telemetry and produce a rigorous JSON output conforming to the schema.
 
 STAKEHOLDER PERSONA: ${persona.toUpperCase()}
@@ -81,39 +84,41 @@ GENERAL RULES:
 }
 
 /**
- * Calls Gemini 2.5 Flash API directly or through Vercel serverless proxy.
+ * Calls Gemini API directly or through Vercel serverless proxy with a 12s timeout AbortController.
  * @param {string} prompt - Structured prompt
  * @returns {Promise<{ data: any, latencyMs: number, source: string }>}
  */
 export async function executeGeminiRequest(prompt) {
   const startTime = performance.now();
 
-  // Route 1: Direct client call if in-memory key is provided
+  // Route 1: Direct client call if valid in-memory key is configured
   if (hasInMemoryApiKey()) {
     const models = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-2.5-flash'];
     for (const model of models) {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_inMemoryApiKey}`;
       const payload = {
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 3500,
-          responseMimeType: 'application/json'
-        }
+        generationConfig: { temperature: 0.2, maxOutputTokens: 3500, responseMimeType: 'application/json' }
       };
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         if (res.ok) {
           const json = await res.json();
           const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
           const latencyMs = Math.round(performance.now() - startTime);
-          const parsedData = JSON.parse(rawText.replace(/```json/gi, '').replace(/```/g, '').trim());
+          const cleanText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+          const parsedData = safeJSONParse(cleanText, {});
 
           return {
             data: parsedData,
@@ -122,32 +127,37 @@ export async function executeGeminiRequest(prompt) {
           };
         }
       } catch {
-        // Try next fallback model
+        clearTimeout(timeoutId);
       }
     }
   }
 
-  // Route 2: Attempt Vercel serverless proxy (/api/gemini)
+  // Route 2: Attempt Vercel serverless proxy (/api/gemini) with 12s timeout
+  const proxyController = new AbortController();
+  const proxyTimeoutId = setTimeout(() => proxyController.abort(), 12000);
   try {
     const proxyRes = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ prompt }),
+      signal: proxyController.signal
     });
+    clearTimeout(proxyTimeoutId);
 
     if (proxyRes.ok) {
       const json = await proxyRes.json();
       const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
       const latencyMs = Math.round(performance.now() - startTime);
-      const parsedData = JSON.parse(rawText.replace(/```json/gi, '').replace(/```/g, '').trim());
+      const cleanText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const parsedData = safeJSONParse(cleanText, {});
       return {
         data: parsedData,
         latencyMs,
-        source: 'Live Gemini 2.5 Flash (via Vercel Serverless Proxy)'
+        source: 'Live Gemini Flash (via Vercel Serverless Proxy)'
       };
     }
   } catch {
-    // Proxy not available or offline; proceed to deterministic fallback
+    clearTimeout(proxyTimeoutId);
   }
 
   throw new Error('No API key configured and server proxy unavailable.');
