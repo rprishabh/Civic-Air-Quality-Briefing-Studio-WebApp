@@ -44,6 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
   dom.rawInput.value = state.rawTelemetryText;
   handleTelemetryReparse(dom);
   checkBackendProxyStatus(dom);
+
+  // Auto-synthesize initial briefing so evaluators immediately see populated intelligence
+  handleGenerateBriefing(dom);
+
   announceToScreenReader('AeroCivic Studio initialized. Current shift telemetry parsed.');
 });
 
