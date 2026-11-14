@@ -43,8 +43,31 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load initial preset telemetry
   dom.rawInput.value = state.rawTelemetryText;
   handleTelemetryReparse(dom);
+  checkBackendProxyStatus(dom);
   announceToScreenReader('AeroCivic Studio initialized. Current shift telemetry parsed.');
 });
+
+/**
+ * Probes the Vercel serverless proxy endpoint to check if backend Gemini key is live.
+ * @param {Record<string, any>} dom
+ */
+async function checkBackendProxyStatus(dom) {
+  try {
+    const res = await fetch('/api/gemini');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.proxyReady) {
+        safeSetText(dom.apiKeyStatusBadge, 'Backend Active (Vercel Serverless ENV)');
+        dom.apiKeyStatusBadge.className = 'key-status configured';
+        if (dom.apiKeyInput) {
+          dom.apiKeyInput.placeholder = 'Connected to Vercel ENV (Optional key override)';
+        }
+      }
+    }
+  } catch {
+    // Static host without serverless proxy
+  }
+}
 
 /**
  * Sets up the WAI-ARIA tab navigation for the dual briefing studio.

@@ -54,29 +54,32 @@ export function generatePersonaActionMatrix(persona, rows) {
     : { rowIndex: 1, location: 'Ward-04', pm25: 412 };
 
   const cite = `[Row #${worstRow.rowIndex} | ${worstRow.location} (PM2.5: ${worstRow.pm25 || 350} µg/m³)]`;
+  const isDenseUrban = rows.some((r) =>
+    /chowk|junction|metro|pier|corridor|complex/i.test(r.location || '')
+  );
 
   if (persona === 'school') {
     return [
       {
         priority: 'P0',
         timeframe: 'Immediate (0-1 Hour)',
-        action: 'Relocate morning outdoor assembly and all sports/recess sessions to climate-controlled indoor halls.',
+        action: 'Relocate morning outdoor assembly and sports/recess sessions to climate-controlled indoor halls.',
         evidenceCitation: cite,
-        impact: 'Prevents acute pediatric bronchial exposure during morning NO2/PM peak.'
+        impact: 'Protects hyper-reactive pediatric airways from peak outdoor particulate ingestion.'
       },
       {
         priority: 'P1',
         timeframe: '08:00 - 09:30 & 14:30 - 16:30',
-        action: 'Enforce strict 50-meter CleanAir@School pedestrian exclusion zone; mandate bus engine idle cutoffs.',
+        action: 'EEA CleanAir@School Diurnal Protocol: Enforce School Street vehicle exclusion zone and mandatory bus engine anti-idling.',
         evidenceCitation: cite,
-        impact: 'Cuts localized school gate tailpipe NO2 surge by up to 34%.'
+        impact: 'Mitigates localized NO2 & PM2.5 tailpipe spikes caused by school drop-off and pick-up congestion.'
       },
       {
         priority: 'P2',
         timeframe: 'Next 24 Hours',
-        action: 'Audit school infirmary salbutamol inhalers and deploy portable HEPA filtration in primary classrooms.',
+        action: 'Audit school infirmary salbutamol inhalers, stock pediatric masks, and deploy HEPA air purifiers in classrooms.',
         evidenceCitation: cite,
-        impact: 'Protects children with documented asthma and hyper-reactive airway disease.'
+        impact: 'Guarantees emergency medical readiness for asthmatic and bronchitic children.'
       }
     ];
   }
@@ -86,49 +89,53 @@ export function generatePersonaActionMatrix(persona, rows) {
       {
         priority: 'P0',
         timeframe: 'Immediate',
-        action: 'Enforce 100% shutdown of auxiliary Diesel Generator (DG) sets across residential towers and clubhouses.',
+        action: 'Enforce complete shutdown of auxiliary Diesel Generator (DG) sets across residential towers and clubhouses.',
         evidenceCitation: cite,
-        impact: 'Stops immediate rooftop particulate spewing into balconies.'
+        impact: 'Halts rooftop black carbon and toxic combustion gas settling over residential balconies.'
       },
       {
         priority: 'P1',
         timeframe: 'Morning & Evening Shifts',
-        action: 'Issue broadcast advisories canceling outdoor senior yoga and toddler play groups; activate clubhouse HEPA sanctuary.',
+        action: 'Cancel outdoor senior morning walks and playground hours; activate common-area HEPA clean air sanctuaries.',
         evidenceCitation: cite,
-        impact: 'Eliminates exertion-induced particulate inhalation for vulnerable residents.'
+        impact: 'Shields vulnerable seniors (65+) and toddlers from severe ambient exposure during atmospheric inversion.'
       },
       {
         priority: 'P2',
-        timeframe: 'Operational Routine',
-        action: 'Deploy estate security marshals to halt municipal open biomass or garden waste burning within 500m perimeter.',
+        timeframe: 'Infrastructure Action',
+        action: 'Deploy "5-Meter Green Buffer" (grass & tree vegetative barrier along perimeter) and organize waste-burning security patrols.',
         evidenceCitation: cite,
-        impact: 'Prevents toxic smoke plume settling over society towers during calm inversion.'
+        impact: '5-Meter Green Buffer reduces pedestrian PM exposure by 3x and roadside CO2 by 35%.'
       }
     ];
   }
 
   // Default: Ward Officer
+  const canyonDiagnosis = isDenseUrban
+    ? 'Diagnosed "Street Canyon Effect" (high structures trapping vehicular emissions): implement open-layout ventilation corridors & localized traffic diversions.'
+    : 'Deploy high-pressure anti-smog water mist cannons and mechanized vacuum sweeping along arterial transit junctions.';
+
   return [
     {
       priority: 'P0',
       timeframe: '0 - 2 Hours',
-      action: 'Deploy high-pressure anti-smog mist cannons and mechanized vacuum sweeping along arterial transit junctions.',
+      action: canyonDiagnosis,
       evidenceCitation: cite,
-      impact: 'Rapidly suppresses re-entrained road dust (PM10/PM2.5) by up to 14%.'
+      impact: 'Disperses stagnant pollutants trapped in dense urban canyons and suppresses re-entrained road dust by 14%.'
     },
     {
       priority: 'P1',
       timeframe: '06:00 - 18:00 Shift',
-      action: 'Enforce construction dust blanket compliance; divert heavy commercial diesel transit to peripheral expressways.',
+      action: 'IIT Delhi Dispersed Sources Protocol: Halt unpaved road dust, fix potholes, and mandate construction blanket covers.',
       evidenceCitation: cite,
-      impact: 'Reduces heavy-duty vehicle NO2 and unpaved particulate loading at critical choke-points.'
+      impact: 'Achieves projected 15%–26.6% local PM2.5 reduction by targeting unpaved dust and open burning sources.'
     },
     {
       priority: 'P2',
       timeframe: '24-Hour Protocol',
-      action: 'Dispatch sensor telemetry technician to resolve offline/drift sensor anomalies and patch data gaps.',
+      action: 'Divert heavy commercial diesel trucks to peripheral expressways and dispatch sensor technicians to patch telemetry gaps.',
       evidenceCitation: cite,
-      impact: 'Restores municipal monitoring visibility across unmonitored sectors.'
+      impact: 'Cuts heavy-duty NO2 loading and restores monitoring integrity across unmonitored ward blindspots.'
     }
   ];
 }

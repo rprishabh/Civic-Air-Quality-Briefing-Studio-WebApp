@@ -29,9 +29,16 @@ function validateRequestBody(body) {
  * @param {import('http').ServerResponse & { status: (code: number) => any, json: (data: any) => any }} res
  */
 export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    return res.status(200).json({
+      status: 'ok',
+      proxyReady: Boolean(process.env.GEMINI_API_KEY)
+    });
+  }
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
+    res.setHeader('Allow', 'GET, POST');
+    return res.status(405).json({ error: 'Method Not Allowed. Use GET or POST.' });
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
