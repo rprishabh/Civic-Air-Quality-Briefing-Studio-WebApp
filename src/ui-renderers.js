@@ -35,24 +35,33 @@ export function renderTelemetryTable(container, rows, onRowClick) {
   ]);
 
   const tbody = createSafeElement('tbody');
+  if (typeof onRowClick === 'function') {
+    tbody.addEventListener('click', (e) => {
+      const tr = e.target.closest('.telemetry-data-row');
+      if (tr && tr.dataset.rowIndex) {
+        onRowClick(parseInt(tr.dataset.rowIndex, 10));
+      }
+    });
+    tbody.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const tr = e.target.closest('.telemetry-data-row');
+        if (tr && tr.dataset.rowIndex) {
+          e.preventDefault();
+          onRowClick(parseInt(tr.dataset.rowIndex, 10));
+        }
+      }
+    });
+  }
+
   const frag = document.createDocumentFragment();
 
   rows.forEach((row) => {
     const tr = createSafeElement('tr', {
       id: `telemetry-row-${row.rowIndex}`,
       class: 'telemetry-data-row',
+      'data-row-index': String(row.rowIndex),
       tabindex: '0'
     });
-
-    if (typeof onRowClick === 'function') {
-      tr.addEventListener('click', () => onRowClick(row.rowIndex));
-      tr.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onRowClick(row.rowIndex);
-        }
-      });
-    }
 
     const tdRow = createSafeElement('td', { class: 'font-mono' }, [String(row.rowIndex)]);
     const tdLoc = createSafeElement('td', { class: 'font-semibold' }, [row.location]);
@@ -155,6 +164,16 @@ export function renderPriorityActionCards(container, actions, onCitationClick) {
     container.removeChild(container.firstChild);
   }
 
+  if (typeof onCitationClick === 'function' && !container.dataset.hasDelegatedCitation) {
+    container.dataset.hasDelegatedCitation = 'true';
+    container.addEventListener('click', (e) => {
+      const chip = e.target.closest('.citation-chip');
+      if (chip && chip.dataset.rowIndex) {
+        onCitationClick(parseInt(chip.dataset.rowIndex, 10));
+      }
+    });
+  }
+
   const frag = document.createDocumentFragment();
   actions.forEach((a) => {
     const card = createSafeElement('div', { class: `action-card action-${a.priority.toLowerCase()}` });
@@ -164,18 +183,14 @@ export function renderPriorityActionCards(container, actions, onCitationClick) {
     ]);
     const body = createSafeElement('p', { class: 'action-text' }, [a.action]);
 
-    // Clickable citation chip
+    const match = a.citation ? a.citation.match(/Row\s*#(\d+)/i) : null;
+    const rowIdx = match ? match[1] : '1';
     const citationChip = createSafeElement('button', {
       type: 'button',
       class: 'citation-chip',
+      'data-row-index': rowIdx,
       'aria-label': `View source evidence ${a.citation}`
     }, [a.citation]);
-
-    if (typeof onCitationClick === 'function') {
-      const match = a.citation.match(/Row\s*#(\d+)/i);
-      const rowIdx = match ? parseInt(match[1], 10) : 1;
-      citationChip.addEventListener('click', () => onCitationClick(rowIdx));
-    }
 
     const impact = createSafeElement('p', { class: 'action-impact' }, [
       createSafeElement('strong', {}, ['Projected Impact: ']),

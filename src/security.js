@@ -29,9 +29,10 @@ export function escapeHTML(value) {
  */
 export function sanitizeCell(cell) {
   if (cell === null || cell === undefined) return '';
-  let str = String(cell).trim();
+  // Strip null bytes and ASCII control characters (C0/C1)
+  let str = String(cell).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
   // Strip dangerous spreadsheet formula execution triggers
-  while (str.length > 0 && /^[=+\-@\t\r]/.test(str)) {
+  while (str.length > 0 && /^[=+\-@\t\r%|]/.test(str)) {
     str = str.substring(1).trim();
   }
   return str;
@@ -84,8 +85,13 @@ export function createSafeElement(tag, attributes = {}, children = []) {
   const el = document.createElement(tag);
 
   for (const [key, val] of Object.entries(attributes)) {
+    const lowerKey = key.toLowerCase();
     // Prohibit inline event attributes (e.g. onclick, onerror) to prevent script injection
-    if (key.toLowerCase().startsWith('on')) {
+    if (lowerKey.startsWith('on')) {
+      continue;
+    }
+    // Prohibit javascript:, vbscript:, and data: URLs in href/src to prevent DOM-based XSS
+    if ((lowerKey === 'href' || lowerKey === 'src') && /^javascript:|^vbscript:|^data:text\/html/i.test(String(val).trim())) {
       continue;
     }
     if (typeof val === 'boolean') {

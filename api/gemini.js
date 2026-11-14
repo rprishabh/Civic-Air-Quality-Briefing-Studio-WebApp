@@ -29,6 +29,10 @@ function validateRequestBody(body) {
  * @param {import('http').ServerResponse & { status: (code: number) => any, json: (data: any) => any }} res
  */
 export default async function handler(req, res) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+
   if (req.method === 'GET') {
     return res.status(200).json({
       status: 'ok',
@@ -39,6 +43,11 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'GET, POST');
     return res.status(405).json({ error: 'Method Not Allowed. Use GET or POST.' });
+  }
+
+  const contentType = req.headers['content-type'] || '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    return res.status(415).json({ error: 'Unsupported Media Type. Expected application/json.' });
   }
 
   const apiKey = process.env.GEMINI_API_KEY;

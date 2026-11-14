@@ -160,11 +160,20 @@ export function processCivicTelemetry(rawText) {
     return { rows: [], meanPM25: 0, summary: { total: 0, valid: 0, gaps: 0 } };
   }
 
+  // Resolve column keys once for O(1) constant-time property lookups
+  const sampleKeys = Object.keys(rawRows[0] || {});
+  const locKey = sampleKeys.find((k) => k.includes('loc') || k.includes('ward') || k.includes('site')) || 'location';
+  const pm25Key = sampleKeys.find((k) => k.includes('pm2.5') || k.includes('pm25')) || 'pm2.5';
+  const pm10Key = sampleKeys.find((k) => k.includes('pm10')) || 'pm10';
+  const no2Key = sampleKeys.find((k) => k.includes('no2')) || 'no2';
+  const rhKey = sampleKeys.find((k) => k.includes('rh') || k.includes('humid')) || 'rh_pct';
+  const tempKey = sampleKeys.find((k) => k.includes('temp')) || 'temp_c';
+  const typeKey = sampleKeys.find((k) => k.includes('type') || k.includes('model')) || 'sensor_type';
+
   // First pass: Calculate mean and standard deviation for Z-scores
   const pmValues = [];
   rawRows.forEach((r) => {
-    const pmKey = Object.keys(r).find((k) => k.includes('pm2.5') || k.includes('pm25'));
-    const pmVal = pmKey ? normalizeConcentration(r[pmKey], 'pm25') : null;
+    const pmVal = normalizeConcentration(r[pm25Key], 'pm25');
     if (pmVal !== null) pmValues.push(pmVal);
   });
 
@@ -176,22 +185,13 @@ export function processCivicTelemetry(rawText) {
 
   let gaps = 0;
   const processedRows = rawRows.map((r, index) => {
-    const locKey = Object.keys(r).find((k) => k.includes('loc') || k.includes('ward') || k.includes('site')) || 'location';
     const location = r[locKey] || `Ward-${index + 1}`;
-
-    const pm25Key = Object.keys(r).find((k) => k.includes('pm2.5') || k.includes('pm25'));
-    const pm10Key = Object.keys(r).find((k) => k.includes('pm10'));
-    const no2Key = Object.keys(r).find((k) => k.includes('no2'));
-    const rhKey = Object.keys(r).find((k) => k.includes('rh') || k.includes('humid'));
-    const tempKey = Object.keys(r).find((k) => k.includes('temp'));
-    const typeKey = Object.keys(r).find((k) => k.includes('type') || k.includes('model'));
-
-    const pm25 = pm25Key ? normalizeConcentration(r[pm25Key], 'pm25') : null;
-    const pm10 = pm10Key ? normalizeConcentration(r[pm10Key], 'pm10') : null;
-    const no2 = no2Key ? normalizeConcentration(r[no2Key], 'no2') : null;
-    const rh = rhKey ? normalizeConcentration(r[rhKey]) : null;
-    const temp = tempKey ? normalizeConcentration(r[tempKey]) : null;
-    const sensorType = typeKey ? r[typeKey] : 'LowCost_Optical';
+    const pm25 = normalizeConcentration(r[pm25Key], 'pm25');
+    const pm10 = normalizeConcentration(r[pm10Key], 'pm10');
+    const no2 = normalizeConcentration(r[no2Key], 'no2');
+    const rh = normalizeConcentration(r[rhKey]);
+    const temp = normalizeConcentration(r[tempKey]);
+    const sensorType = r[typeKey] || 'LowCost_Optical';
 
     if (pm25 === null) gaps++;
 

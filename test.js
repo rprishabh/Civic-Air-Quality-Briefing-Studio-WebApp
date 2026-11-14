@@ -16,8 +16,9 @@ import {
 import { sanitizeCell, escapeHTML, validateUploadFile } from './src/security.js';
 import { simulateIITDelhiCivicFixes, generatePersonaActionMatrix, buildCitizenAdvisoryText } from './src/advisory-engine.js';
 import { buildGeminiPrompt, hasInMemoryApiKey, setInMemoryApiKey } from './src/ai.js';
+import { saveMemorySnapshot, getMemorySnapshot, clearMemorySnapshots } from './src/storage.js';
 
-console.log('🧪 Starting AeroCivic Studio Automated Test Suite (20 Assertions)...\n');
+console.log('🧪 Starting AeroCivic Studio Automated Test Suite (25 Assertions)...\n');
 
 let passed = 0;
 function runTest(name, fn) {
@@ -179,10 +180,51 @@ runTest('20. Ensure API key is maintained in private module memory closure only'
   assert.strictEqual(hasInMemoryApiKey(), false);
 });
 
+// 21. In-Memory Snapshot Persistence
+runTest('21. Save and retrieve snapshot from memory store', () => {
+  saveMemorySnapshot('testSnapshot', { aqi: 250, location: 'Ward-1' });
+  const retrieved = getMemorySnapshot('testSnapshot');
+  assert.strictEqual(retrieved.aqi, 250);
+  assert.strictEqual(retrieved.location, 'Ward-1');
+});
+
+// 22. In-Memory Snapshot Clearing
+runTest('22. Verify snapshot store clearing', () => {
+  clearMemorySnapshots();
+  assert.strictEqual(getMemorySnapshot('testSnapshot'), null);
+});
+
+// 23. ASCII Control Character Sanitization
+runTest('23. Strip null bytes and non-printable control characters from telemetry', () => {
+  const dirty = 'Ward-4\x00\x08\x1F';
+  const clean = sanitizeCell(dirty);
+  assert.strictEqual(clean, 'Ward-4');
+});
+
+// 24. IIT Delhi Reduction Maximum Physical Bound
+runTest('24. Verify IIT Delhi simulation caps cumulative reduction at 48%', () => {
+  const sim = simulateIITDelhiCivicFixes(500, [
+    'pothole_unpaved_paving',
+    'waste_burning_patrols',
+    'water_misting_mechanized',
+    'dg_set_diesel_halt'
+  ]);
+  assert.strictEqual(sim.percentDrop <= 48, true);
+  assert.strictEqual(sim.projectedPM25 >= 260, true);
+});
+
+// 25. Dominant Pollutant Selection
+runTest('25. Ensure telemetry processor picks dominant pollutant sub-index', () => {
+  const telemetry = 'Location,PM2.5,PM10\nWard-1,20,450';
+  const res = processCivicTelemetry(telemetry);
+  assert.strictEqual(res.rows[0].aqi > 400, true);
+  assert.strictEqual(res.rows[0].category, 'Severe');
+});
+
 console.log(`\n========================================`);
-console.log(`TEST SUMMARY: ${passed} / 20 ASSERTIONS PASSED (100% SUCCESS)`);
+console.log(`TEST SUMMARY: ${passed} / 25 ASSERTIONS PASSED (100% SUCCESS)`);
 console.log(`========================================\n`);
 
-if (passed !== 20) {
+if (passed !== 25) {
   process.exit(1);
 }

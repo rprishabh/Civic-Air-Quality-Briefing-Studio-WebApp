@@ -54,16 +54,17 @@ export function highlightTelemetryRow(rowIndex) {
   const rowEl = document.getElementById(rowId);
   if (!rowEl) return;
 
-  // Remove previous highlights
-  document.querySelectorAll('.telemetry-data-row.highlighted').forEach((r) => {
-    r.classList.remove('highlighted');
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.telemetry-data-row.highlighted').forEach((r) => {
+      r.classList.remove('highlighted');
+    });
+
+    rowEl.classList.add('highlighted');
+    rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    rowEl.focus();
+
+    setTimeout(() => {
+      rowEl.classList.remove('highlighted');
+    }, 4000);
   });
-
-  rowEl.classList.add('highlighted');
-  rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  rowEl.focus();
-
-  setTimeout(() => {
-    rowEl.classList.remove('highlighted');
-  }, 4000);
 }
