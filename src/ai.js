@@ -93,7 +93,7 @@ export async function executeGeminiRequest(prompt) {
 
   // Route 1: Direct client call if valid in-memory key is configured
   if (hasInMemoryApiKey()) {
-    const models = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-2.5-flash'];
+    const models = ['gemini-2.5-flash', 'gemini-2.5-pro'];
     for (const model of models) {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_inMemoryApiKey}`;
       const payload = {
