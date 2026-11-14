@@ -57,11 +57,7 @@ async function checkBackendProxyStatus(dom) {
     if (res.ok) {
       const data = await res.json();
       if (data.proxyReady) {
-        safeSetText(dom.apiKeyStatusBadge, 'Backend Active (Vercel Serverless ENV)');
-        dom.apiKeyStatusBadge.className = 'key-status configured';
-        if (dom.apiKeyInput) {
-          dom.apiKeyInput.placeholder = 'Connected to Vercel ENV (Optional key override)';
-        }
+        safeSetText(dom.aiEngineStatusText, 'Gemini AI Engine: Active');
       }
     }
   } catch {
@@ -231,19 +227,6 @@ function bindUIEventListeners(dom) {
   });
   dom.readingLevelSelect.addEventListener('change', (e) => {
     state.readingLevel = e.target.value;
-  });
-
-  // Ephemeral In-Memory API Key (NEVER written to storage)
-  dom.apiKeyInput.addEventListener('input', (e) => {
-    const val = e.target.value;
-    setInMemoryApiKey(val);
-    if (val.trim().length > 10) {
-      safeSetText(dom.apiKeyStatusBadge, 'Gemini Key Configured (Memory Only)');
-      dom.apiKeyStatusBadge.className = 'key-status configured';
-    } else {
-      safeSetText(dom.apiKeyStatusBadge, 'No Key (Using Deterministic Engine / Server Proxy)');
-      dom.apiKeyStatusBadge.className = 'key-status unconfigured';
-    }
   });
 
   // Action Buttons
