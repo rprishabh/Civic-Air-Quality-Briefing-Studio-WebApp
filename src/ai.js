@@ -90,36 +90,41 @@ export async function executeGeminiRequest(prompt) {
 
   // Route 1: Direct client call if in-memory key is provided
   if (hasInMemoryApiKey()) {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${_inMemoryApiKey}`;
-    const payload = {
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 3500,
-        responseMimeType: 'application/json'
+    const models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
+    for (const model of models) {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_inMemoryApiKey}`;
+      const payload = {
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 3500,
+          responseMimeType: 'application/json'
+        }
+      };
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+          const latencyMs = Math.round(performance.now() - startTime);
+          const parsedData = JSON.parse(rawText.replace(/```json/gi, '').replace(/```/g, '').trim());
+
+          return {
+            data: parsedData,
+            latencyMs,
+            source: `Live Gemini Generative Synthesis (${model})`
+          };
+        }
+      } catch {
+        // Try next fallback model
       }
-    };
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      throw new Error(`Direct Gemini API failed with HTTP ${res.status}: ${res.statusText}`);
     }
-
-    const json = await res.json();
-    const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-    const latencyMs = Math.round(performance.now() - startTime);
-    const parsedData = JSON.parse(rawText.replace(/```json/gi, '').replace(/```/g, '').trim());
-
-    return {
-      data: parsedData,
-      latencyMs,
-      source: 'Live Gemini 2.5 Flash Generative Synthesis'
-    };
   }
 
   // Route 2: Attempt Vercel serverless proxy (/api/gemini)

@@ -54,36 +54,39 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: validation.error });
   }
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
+  let lastError = null;
 
-  try {
-    const geminiPayload = {
-      contents: [{ role: 'user', parts: [{ text: req.body.prompt }] }],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 4096,
-        responseMimeType: 'application/json'
-      }
-    };
+  for (const model of models) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    try {
+      const geminiPayload = {
+        contents: [{ role: 'user', parts: [{ text: req.body.prompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 4096,
+          responseMimeType: 'application/json'
+        }
+      };
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiPayload)
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      return res.status(response.status).json({
-        error: `Gemini API error: ${response.statusText}`,
-        details: errText
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiPayload)
       });
-    }
 
-    const data = await response.json();
-    return res.status(200).json(data);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown upstream error';
-    return res.status(502).json({ error: 'Failed to communicate with Gemini API', message });
+      if (response.ok) {
+        const data = await response.json();
+        return res.status(200).json(data);
+      }
+      lastError = await response.text();
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : 'Network error';
+    }
   }
+
+  return res.status(502).json({
+    error: 'Failed to communicate with Gemini API',
+    details: lastError
+  });
 }
